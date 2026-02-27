@@ -45,7 +45,7 @@ namespace LinqTakeSkip
           {
               Id = 6,
               Name = "Mari",
-              Age = 28,
+              Age = 15,
               GenderId = Guid.Parse("480f38c0-1262-49db-bb38-470fe852dc76")
           },
         new People()
