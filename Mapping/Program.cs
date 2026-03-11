@@ -62,7 +62,27 @@ namespace Mapping
             
             
             Console.WriteLine("---------------------------------");
-            Console.WriteLine("Car"); 
+            Console.WriteLine("Car");
+            //var loggerFactory = LoggerFactory.Create(builder => { });
+
+
+            //var config = new MapperConfiguration(cfg =>
+            //{
+            //    cfg.CreateMap<Employee, EmployeesDto>();
+            //}, loggerFactory);
+
+            //IMapper mapper = config.CreateMapper();
+
+            //var emp2 = new Employee
+            //{
+            //    Id = 12,
+            //    Name = "Name2",
+            //    Title = "Title2",
+            //    Description = "Description2",
+
+            //};
+            //var dto2 = mapper.Map<EmployeesDto>(emp2);
+            //Console.WriteLine(dto2.Id + " " + dto2.Name + " " + dto2.Title + " " + dto2.Description);
 
 
         }
