@@ -11,4 +11,9 @@
     <PackageReference Include="Microsoft.AspNetCore" Version="2.3.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\InheritanceAndServiceClass.AppServices\InheritanceAndServiceClass.AppServices.csproj" />
+    <ProjectReference Include="..\InheritanceAndServiceClass.Core\InheritanceAndServiceClass.Core.csproj" />
+  </ItemGroup>
+
 </Project>
