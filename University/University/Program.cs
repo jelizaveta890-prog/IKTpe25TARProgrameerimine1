@@ -12,6 +12,10 @@ namespace University
             builder.Services.AddDbContext<Data.UniversityContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("UniversityContext")));
 
+           //Add datebase exception filter for develompment enivorment
+           //This will show detailed database errors druing development
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
