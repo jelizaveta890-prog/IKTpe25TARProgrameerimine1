@@ -50,9 +50,6 @@ namespace University.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CrouseId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("Grade")
                         .HasColumnType("int");
 

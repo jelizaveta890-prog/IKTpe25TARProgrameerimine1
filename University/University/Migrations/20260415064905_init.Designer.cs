@@ -12,7 +12,7 @@ using University.Data;
 namespace University.Migrations
 {
     [DbContext(typeof(UniversityContext))]
-    [Migration("20260402072905_init")]
+    [Migration("20260415064905_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -51,9 +51,6 @@ namespace University.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EnrollmentId"));
 
                     b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CrouseId")
                         .HasColumnType("int");
 
                     b.Property<int?>("Grade")

@@ -45,10 +45,9 @@ namespace University.Migrations
                 {
                     EnrollmentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CrouseId = table.Column<int>(type: "int", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
                     StudentId = table.Column<int>(type: "int", nullable: false),
-                    Grade = table.Column<int>(type: "int", nullable: true),
-                    CourseId = table.Column<int>(type: "int", nullable: false)
+                    Grade = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
