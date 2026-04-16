@@ -23,6 +23,8 @@ namespace University
 
             var app = builder.Build();
 
+            CreateDbIfNotExists(app);
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
