@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using University.Data;
+using University.Models;
+using University.ViewModel;
 
 namespace University.Controllers
 {
@@ -48,6 +50,14 @@ namespace University.Controllers
             var student = await _context.Students
                 .FirstOrDefaultAsync(m => m.Id == id);
 
+            var vm = new ViewModel.StudentDetailsViewModel
+            {
+                Id = student.Id,
+                LastName = student.LastName,
+                FirstMidName = student.FirstMidName,
+                EnrollmentDate = student.EnrollmentDate,
+            };
+
             //kui student on null, siis tagastame NotFound() tulemuse
             if (student == null)
             {
@@ -55,8 +65,42 @@ namespace University.Controllers
             }
 
             //kui student on leitud, siis tagastame View(student) tulemuse
-            return View(student);
+            return View(vm);
+        }
+        //GET:Student/Create
+        //see meetod salvestab uue student'i andmebaasi
+        public IActionResult Create()
+        {
+            return View();
+        }
+        //POST: Student/Create
+        //see meetod salvestab uue student'i andmebaasi
+        [HttpPost]
+        //see meetod on kaitstud CSRF rünnakute eest
+        //see meetod on asünkoorne, mis tähendab, et see meetod ei saa
+        //olla samaaegselt mitu korda käivitatud
+        public async Task<IActionResult> Create(StudentCreateViewModel vm)
+        {
+            //kui model on valiidne, siis loome uue student'i ja salvestame selle andmebaasi
+            if (ModelState.IsValid)
+            {
+                var student = new Models.Student
+                {
+                    Id = vm.Id,
+                    LastName = vm.LastName,
+                    FirstMidName = vm.FirstMidName,
+                    EnrollmentDate = vm.EnrollmentDate,
+                };
+                //lisame student'i andmebaasi ja salvestame muudatuse
+                _context.Add(student);
+                //miks kasutame await?
+                //kui me kasutame await, siis me ootame kuni salvestamine on lõpetatud
+                await _context.SaveChangesAsync();
+                //pärast salvestamist suuname kasutaja tagasi Index vaatesse
+                return RedirectToAction(nameof(Index));
 
+            }
+            return View(vm);
         }
     }
 }
