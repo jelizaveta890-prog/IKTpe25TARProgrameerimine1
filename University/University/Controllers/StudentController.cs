@@ -48,6 +48,13 @@ namespace University.Controllers
 
             //leiame student'i id järgi
             var student = await _context.Students
+                //Include lubab objekti kasutada objekti sees
+                .Include(s => s.Enrollments)
+                //Kui tahad uuesti objeti kasutada objekti sees, siis kasutad ThenInclude
+                .ThenInclude(e => e.Course)
+                //andmeid ei salvestata vähemällu ja ei jälgita
+                .AsNoTracking()
+                // Leiab esimese elemendi andmetes, mis on tingimuse välja toodud 
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             var vm = new ViewModel.StudentDetailsViewModel
@@ -56,6 +63,24 @@ namespace University.Controllers
                 LastName = student.LastName,
                 FirstMidName = student.FirstMidName,
                 EnrollmentDate = student.EnrollmentDate,
+                //Miks kasutame ?? - vaikiva väärtuse annab e default väärtus, kui muutuja on tühi (null)
+                //või mitte defineeritud. Annab enne vasakpoolse väärtuse, kui see ei ole null. Kui on null, 
+                //siis annab parempoolse väärtuse.
+                EnrollmentsVm = (student.Enrollments ?? Enumerable.Empty<Enrollment>())
+                .Select(x => new EnrollmentViewModel
+                {
+                    CourseId = x.CourseId,
+                    Grade = x.Grade,
+                    CourseVm = new CourseViewModel
+                    {
+                        CourseId = x.Course?.CourseId ?? 0,
+                        Title = x.Course?.Title,
+                        Credits = x.Course?.Credits ?? 0
+                    }
+                    //üks õpilane võib mitu kursust olla läbinud  ja 
+                    //selle tulemusel tuleb lõppu panna ToArray
+                }).ToArray()
+
             };
 
             //kui student on null, siis tagastame NotFound() tulemuse
@@ -89,7 +114,7 @@ namespace University.Controllers
                     Id = vm.Id,
                     LastName = vm.LastName,
                     FirstMidName = vm.FirstMidName,
-                    EnrollmentDate = vm.EnrollmentDate,
+                    EnrollmentDate = vm.EnrollmentDate
                 };
                 //lisame student'i andmebaasi ja salvestame muudatuse
                 _context.Add(student);
