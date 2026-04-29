@@ -133,7 +133,7 @@ namespace University.Controllers
         {
             var student = await _context.Students
 
-                // Leiab esimese elemendi andmetes, mis on tingimuse välja toodud 
+           // Leiab esimese elemendi andmetes, mis on tingimuse välja toodud 
            .FirstOrDefaultAsync(m => m.Id == id);
 
             //kui student on null, siis on NotFound()
@@ -142,9 +142,9 @@ namespace University.Controllers
                 return NotFound();
             }
 
-           
+
             var vm = new StudentUpdateViewModel
-            { 
+            {
                 Id = student.Id,
                 FirstMidName = student.FirstMidName,
                 LastName = student.LastName,
@@ -152,7 +152,7 @@ namespace University.Controllers
             };
 
             //tuleb teha domaini modelist andmete ülekanne view modeli omasse
-            
+
             return View(vm);
         }
         [HttpPost]
@@ -174,18 +174,17 @@ namespace University.Controllers
                 //kui me kasutame await, siis me ootame kuni salvestamine on lõpetatud
                 await _context.SaveChangesAsync();
                 //pärast salvestamist suuname kasutaja tagasi Index vaatesse
-                
-                
+
+
                 //Kui andmed on uuendatud, siis suunab tagasi Update vaatassse, kus saab kohe uuesti andmeid uuendada.
                 //Hetkel suunab Indexi vaatasse peale uuendust.
-                return RedirectToAction(nameof(Update), new {id = studentUpdate});
+                return RedirectToAction(nameof(Update), new { id = studentUpdate });
             }
-                
+
             return RedirectToAction(nameof(Index));
 
         }
 
-        //Tehke Delete Get meetod koos vaatega
 
         [HttpGet]
         public async Task<IActionResult> Delete(int? id)
@@ -195,40 +194,70 @@ namespace University.Controllers
                 return NotFound();
             }
 
+
             var student = await _context.Students
+                .Include(s => s.Enrollments)
+                    .ThenInclude(e => e.Course)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var vm = new StudentDeleteViewModel
+            {
+                Id = student.Id,
+                LastName = student.LastName,
+                FirstMidName = student.FirstMidName,
+                EnrollmentDate = student.EnrollmentDate,
+                EnrollmentsVm = (student.Enrollments ?? Enumerable.Empty<Enrollment>())
+                    .Select(x => new EnrollmentViewModel
+                    {
+                        CourseId = x.CourseId,
+                        Grade = x.Grade,
+                        CourseVm = new CourseViewModel
+                        {
+                            CourseId = x.Course?.CourseId ?? 0,
+                            Title = x.Course?.Title,
+                            Credits = x.Course?.Credits ?? 0
+                        }
+                    }).ToArray()
+            };
 
             if (student == null)
             {
                 return NotFound();
             }
 
-            var vm = new StudentDetailsViewModel
-            {
-                Id = student.Id,
-                LastName = student.LastName,
-                FirstMidName = student.FirstMidName,
-                EnrollmentDate = student.EnrollmentDate
-            };
-
             return View(vm);
         }
 
+        //tuleb teha ankeedi 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeletePost(int id)
         {
-            var student = await _context.Students.FindAsync(id);
-            if (student != null)
+            try
             {
-                _context.Students.Remove(student);
+                Student delete = new Student()
+                {
+                    Id = id,
+
+                };
+                //Teine variant
+                // var delete = await _context.Students
+                //  .FirstOrDefaultAsync(x => x.Id == id);
+
+                _context.Students.Remove(delete);
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                return RedirectToAction(nameof(Delete), new { id = id, SaveChangesError = true });
+                throw;
             }
 
-            return RedirectToAction(nameof(Index));
-        }
+            return View(nameof(Delete));
 
+
+        }
     }
 }
-    
