@@ -21,15 +21,29 @@ namespace University.Controllers
 
         public async Task<IActionResult> Index(string sortOrder)
         {
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["NameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "name_desc" : "Date";
 
-            var students = from s in _context.Students
-                           select s;
+            //var students = from s in _context.Students
+            //               select s;
+
+            //leiame kõik student'id ja teisendame need StudentIndexViewModel'iks
+            //miks peab kasutama await?
+            //kui me kasutame await, siis me ootame kuni päring on lõpetatud
+            //ja saame tulemuse, enne kui me jätkame koodi kirjutamist
+
+            IEnumerable<StudentIndexViewModel> students = await _context.Students
+                .Select(s => new StudentIndexViewModel
+                {
+                    Id = s.Id,
+                    LastName = s.LastName,
+                    FirstMidName = s.FirstMidName,
+                    EnrollmentDate = s.EnrollmentDate
+                }).ToListAsync();
+
 
             switch (sortOrder)
             {
-
                 case "name_desc":
                     students = students.OrderByDescending(s => s.LastName);
                     break;
@@ -43,28 +57,14 @@ namespace University.Controllers
                     break;
 
                 default:
-
                     students = students.OrderBy(s => s.LastName);
                     break;
             }
 
-            //leiame kõik student'id ja teisendame need StudentIndexViewModel'iks
-            //miks peab kasutama await?
-            //kui me kasutame await, siis me ootame kuni päring on lõpetatud
-            //ja saame tulemuse, enne kui me jätkame koodi kirjutamist
-            var result = await _context.Students
-                .Select(s => new ViewModel.StudentIndexViewModel
-                {
-                    Id = s.Id,
-                    LastName = s.LastName,
-                    FirstMidName = s.FirstMidName,
-                    EnrollmentDate = s.EnrollmentDate
-                    //miks kasutame ToListAsync()?
-                    //kui me kasutame ToListAsync(), siis saame tulemuse listina
-                }).ToListAsync();
+            return View(students.ToList());
 
-            return View(result);
         }
+
         public async Task<IActionResult> Details(int? id)
         {
             //kui id on null, siis tagastame NotFound() tulemuse
