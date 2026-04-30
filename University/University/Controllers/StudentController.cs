@@ -19,10 +19,11 @@ namespace University.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             ViewData["NameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "name_desc" : "Date";
+            ViewData["CurrentFilter"] = searchString;
 
             //var students = from s in _context.Students
             //               select s;
@@ -41,6 +42,12 @@ namespace University.Controllers
                     EnrollmentDate = s.EnrollmentDate
                 }).ToListAsync();
 
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                students = students.Where(s => s.LastName.Contains(searchString)
+                          || s.FirstMidName.Contains(searchString));  
+
+            }
 
             switch (sortOrder)
             {
