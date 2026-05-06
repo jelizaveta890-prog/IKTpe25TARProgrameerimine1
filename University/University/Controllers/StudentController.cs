@@ -19,11 +19,21 @@ namespace University.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumber, string currentFilter)
         {
+           
             ViewData["NameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "name_desc" : "Date";
             ViewData["CurrentFilter"] = searchString;
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
 
             //var students = from s in _context.Students
             //               select s;
