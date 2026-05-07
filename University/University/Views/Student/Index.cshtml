@@ -1,4 +1,4 @@
-﻿@model IEnumerable<University.ViewModel.StudentIndexViewModel>
+﻿@model University.Utilities.PaginatedList<University.ViewModel.StudentIndexViewModel>
 
 @{
     ViewData["Title"] = "Student Index";
@@ -24,15 +24,15 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.LastName)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Last name</a>
             </th>
 
             <th>
-                @Html.DisplayNameFor(model => model.FirstMidName)
+                First name
             </th>
            
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">@Html.DisplayNameFor(model => model.EnrollmentDate)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Enrollment date</a>
             </th>
             <th>
 
@@ -48,7 +48,7 @@
                     @Html.DisplayFor(model => item.LastName)
                 </td>
 
-                <td >
+                <td>
                     @Html.DisplayFor(model => item.FirstMidName)
                 </td>
            
@@ -65,4 +65,25 @@
         }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviosPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disable" : "";
+
+    <a asp-action="Index"
+        asp-route-sortOrder="@ViewData["CurrentSort"]"
+        asp-route-pageNumber="@(Model.PageIndex - 1)"
+        asp-route-currentFilter="@ViewData["CurrentFilter"]"
+        class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+
+    <a asp-action="Index"
+           asp-route-sortOrder="@ViewData["CurrentSort"]"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           class="btn btn-default @prevDisabled">
+        Next
+    </a>
+}
 
