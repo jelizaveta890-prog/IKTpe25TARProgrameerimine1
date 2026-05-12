@@ -42,9 +42,12 @@ namespace University.Controllers
                 into dateGroup
                 select new EnrollmentDateGroupViewModel()
                 {
-                    EnrollmetntDate = dateGroup.Key,
+                    EnrollmentDate = dateGroup.Key,
                     StudentCount = dateGroup.Count(),
                 };
+
+            //Teha About vaade, mis kuvab üliüpilastele arvu registreerimise kuupäeva järgi.
+
             return View(await data.AsNoTracking().ToListAsync());
         }
     }
