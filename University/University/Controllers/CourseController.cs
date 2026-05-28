@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
 using University.Data;
 using University.Models;
+using University.ViewModel.CoursesVM;
 
 namespace University.Controllers
 {
@@ -24,14 +26,22 @@ namespace University.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var result = await _context.Courses
-                  .Include(c => c.DepartmentId)
-                  .AsNoTracking()
-                  .ToListAsync();
+            var course = _context.Courses
+                .Include(c => c.Departments)
+                .Select(c => new CourseIndexViewModel
+                {
+                    CourseId = c.CourseId,
+                    Title = c.Title,
+                    Credits = c.Credits,
+                    DepartmentId = c.DepartmentId,
+                    Department = new CourseDepartmentIndexViewModel
+                    {
+                        DepartmentName = c.Departments.Name
+                    }
+                });
 
-            return View(result);
+            return View(course);
+
         }
-
     }
 }
-
