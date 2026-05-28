@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -43,5 +44,30 @@ namespace University.Controllers
             return View(course);
 
         }
+
+        public async Task<IActionResult> Update(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var vm = await _context.Courses
+                .Where(c => c.CourseId == id)
+                .Select(c => new CourseUpdateViewModel
+                {
+                    CourseId = c.CourseId,
+                    Credits = c.Credits,
+                    Title = c.Title,
+                    Department = new CourseDepartmentIndexViewModel
+                    {
+                        DepartmentName = c.Departments != null ? c.Departments.Name : null
+                    }
+                })
+                .FirstOrDefaultAsync();
+
+            return View(vm);
+        }
     }
 }
+
