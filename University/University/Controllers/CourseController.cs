@@ -129,6 +129,34 @@ namespace University.Controllers
 
         }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+
+            var course = await _context.Courses
+                .Include(c => c.Departments)
+                .Where(c => c.CourseId == id)
+                .Select(c => new CourseDetailsViewModel
+                {
+                    CourseId = c.CourseId,
+                    Credits = c.Credits,
+                    Title = c.Title,
+                    Department = new CourseDepartmentIndexViewModel
+                    {
+                        DepartmentName =  c.Departments.Name 
+                    }
+                })
+                .FirstOrDefaultAsync();
+            
+                if (course == null)
+                {
+                    return NotFound();
+                }
+
+           
+                return View(course);
+        }
+
+
         private void PopulateDepartmentDropDownList(object selectDepartment = null)
         {
             var departmentsQuery = from d in _context.Departments
@@ -136,7 +164,6 @@ namespace University.Controllers
                                    select d;
             ViewBag.DepartmentId = new SelectList(departmentsQuery
                 .AsNoTracking(), "DepartmentId", "Name", departmentsQuery);
-
         }
     }
 }
