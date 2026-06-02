@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -81,8 +82,8 @@ namespace University.Controllers
                     Credits = vm.Credits,
                     Departments = new Department
                     {
-                         Name = vm.Department.DepartmentName
-                    } 
+                        Name = vm.Department.DepartmentName
+                    }
                 };
 
                 _context.Update(course);
@@ -91,7 +92,50 @@ namespace University.Controllers
                 return RedirectToAction(nameof(Index));
 
             }
+
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Create()
+        {
+
+            PopulateDepartmentDropDownList();
+            return View();
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Creat(CourseCreateViewModel vm)
+        {
+
+            var course = new Course
+            {
+                CourseId = vm.CourseId,
+                Title = vm.Title,
+                Credits = vm.Credits,
+                Departments = new Department
+                {
+                    Name = vm.Department.Name
+                }
+            };
+
+            _context.Add(course);
+            await _context.SaveChangesAsync();
+
+
+            PopulateDepartmentDropDownList(course.DepartmentId);
+            return RedirectToAction(nameof(Index));
+
+        }
+
+        private void PopulateDepartmentDropDownList(object selectDepartment = null)
+        {
+            var departmentsQuery = from d in _context.Departments
+                                   orderby d.Name
+                                   select d;
+            ViewBag.DepartmentId = new SelectList(departmentsQuery
+                .AsNoTracking(), "DepartmentId", "Name", departmentsQuery);
 
         }
     }
