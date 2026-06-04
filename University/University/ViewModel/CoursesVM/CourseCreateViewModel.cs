@@ -7,7 +7,6 @@ namespace University.ViewModel.CoursesVM
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Display(Name = "Number")]
-
         public int CourseId { get; set; }
         public string? Title { get; set; }
         public int Credits { get; set; }
@@ -16,11 +15,8 @@ namespace University.ViewModel.CoursesVM
         public DepartmentViewModel Department { get; set; }
     }
 
-
     public class DepartmentViewModel
     {
-      public string? Name { get; set; }
-
+        public string? Name { get; set; }
     }
-
 }
