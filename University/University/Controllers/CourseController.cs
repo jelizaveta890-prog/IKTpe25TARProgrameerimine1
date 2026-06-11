@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using University.Data;
 using University.Models;
+using University.ServicInterface;
 using University.ViewModel.CoursesVM;
 using University.ViewModel.CoursesVM;
 
@@ -11,12 +12,15 @@ namespace University.Controllers
     public class CourseController : Controller
     {
         private readonly UniversityContext _context;
+        private readonly IFileServices _fileServices;
         public CourseController
             (
-                UniversityContext context
+                UniversityContext context,
+                IFileServices fileServices
             )
         {
             _context = context;
+            _fileServices = fileServices;
         }
 
         public async Task<IActionResult> Index()
@@ -97,12 +101,13 @@ namespace University.Controllers
         public async Task<IActionResult> Create(CourseCreateViewModel vm)
         {
 
-            var course = new Course
+            Course course = new Course();
             {
-                CourseId = vm.CourseId,
-                Title = vm.Title,
-                Credits = vm.Credits,
-                DepartmentId = vm.DepartmentId,
+                course.CourseId = vm.CourseId;
+                course.Title = vm.Title;
+                course.Credits = vm.Credits;
+                course.DepartmentId = vm.DepartmentId;
+                _fileServices.FilesToApi(dto, course);
             };
 
             _context.Add(course);
